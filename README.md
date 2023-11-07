@@ -3,6 +3,6 @@
 
 ## How to run
 ```
-pip install -r reuqirements.txt
+pip install -r requirement.txt
 ./run_cifar10.sh
 ```
