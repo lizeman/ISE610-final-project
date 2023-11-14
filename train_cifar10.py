@@ -74,7 +74,7 @@ def experiment(args):
     test_loader = select_test_loader(args)
 
     # load optimizer
-    optimizer = optim.SGD(model.parameters(), lr=args.lr)
+    optimizer = optim.SGD(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
 
     # loss function
     criterion = nn.CrossEntropyLoss()
@@ -102,6 +102,10 @@ def experiment(args):
         print(
             f"Epoch {epoch}: train loss: {train_loss : 5f}, train acc: {train_acc}, val loss: {val_loss}, val acc: {val_acc}, test loss: {test_loss}, test acc: {test_acc}"
         )
+
+    # Evaluate
+    test_loss, test_acc = test_per_epoch(model, criterion, test_loader, device)
+    return test_loss, test_acc
 
 
 def main():
@@ -153,6 +157,9 @@ def main():
         help="the epochs for performing private training",
     )
     parser.add_argument("--lr", type=float, default=0.01, help="learning rate")
+    parser.add_argument("--weight_decay", type=float, default=5e-4, help="weight decay")
+
+
     args = parser.parse_args()
     print(f"Running on {args.device}")
     experiment(args)
