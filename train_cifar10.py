@@ -15,6 +15,7 @@ import logging
 
 logging.basicConfig(level=logging.INFO)
 
+
 def setup_seed(seed):
     torch.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
@@ -74,7 +75,9 @@ def experiment(args):
     test_loader = select_test_loader(args)
 
     # load optimizer
-    optimizer = optim.SGD(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
+    optimizer = optim.SGD(
+        model.parameters(), lr=args.lr, weight_decay=args.weight_decay
+    )
 
     # loss function
     criterion = nn.CrossEntropyLoss()
@@ -105,6 +108,13 @@ def experiment(args):
 
     # Evaluate
     test_loss, test_acc = test_per_epoch(model, criterion, test_loader, device)
+
+    # Free up Cuda Memory
+    model = model.to("cpu")
+    del model
+    del test_loader, train_loader, val_loader
+    torch.cuda.empty_cache()
+
     return test_loss, test_acc
 
 
@@ -158,7 +168,6 @@ def main():
     )
     parser.add_argument("--lr", type=float, default=0.01, help="learning rate")
     parser.add_argument("--weight_decay", type=float, default=5e-4, help="weight decay")
-
 
     args = parser.parse_args()
     print(f"Running on {args.device}")
