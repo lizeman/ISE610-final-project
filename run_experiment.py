@@ -1,6 +1,8 @@
 from typing import Any
 import pandas as pd
 from train_cifar10 import experiment
+import os
+import argparse
 
 
 class dummy_args:
@@ -9,9 +11,17 @@ class dummy_args:
 
 
 def main():
-    df = pd.read_csv("result_remain.csv")
+    output_dir = "./output"
+    os.makedirs(output_dir, exist_ok=True)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--start", type=int, default=0)
+    parser.add_argument("--end", type=int, default=50)
+    curr_args = parser.parse_args()
+    output_filename = f"result_{curr_args.start}_{curr_args.end}.csv"
+
+    df = pd.read_csv("ise_610-final_proj_design.csv")[curr_args.start : curr_args.end]
     df = df.reset_index(drop=True)
-    df.to_csv("result_Nov20.csv")
+    df.to_csv(os.path.join(output_dir, output_filename))
     for i in range(len(df)):
         args = dummy_args()
         args.device = "cuda"
@@ -25,16 +35,13 @@ def main():
         args.epochs = int(df.loc[i, "epochs"])
         args.seed = 42
         args.lr = df.loc[i, "learning_rate"]
-        args.weight_decay = df.loc[i, "weight_decay"]
+        args.momentum = df.loc[i, "momentum"]
         print(args.__dict__)
-        if args.batch_size == 2 ** 12:
-            continue
         test_loss, test_acc = experiment(args)
         df.loc[i, "Accuracy"] = test_acc
         df.loc[i, "Loss"] = test_loss
-        df.to_csv("result_Nov20.csv")
-    df.to_csv("result_Nov20.csv")
-
+        df.to_csv(os.path.join(output_dir, output_filename))
+    df.to_csv(os.path.join(output_dir, output_filename))
 
 if __name__ == "__main__":
     main()

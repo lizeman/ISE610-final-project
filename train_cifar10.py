@@ -76,7 +76,7 @@ def experiment(args):
 
     # load optimizer
     optimizer = optim.SGD(
-        model.parameters(), lr=args.lr, weight_decay=args.weight_decay
+        model.parameters(), lr=args.lr, momentum=args.momentum
     )
 
     # loss function
@@ -157,7 +157,7 @@ def main():
     parser.add_argument(
         "--delta",
         type=float,
-        default=1e-6,
+        default=1e-5,
         help="target delta for differential privacy",
     )
     parser.add_argument(
@@ -167,7 +167,7 @@ def main():
         help="the epochs for performing private training",
     )
     parser.add_argument("--lr", type=float, default=0.01, help="learning rate")
-    parser.add_argument("--weight_decay", type=float, default=5e-4, help="weight decay")
+    parser.add_argument("--momentum", type=float, default=0.9, help="momentum")
 
     args = parser.parse_args()
     print(f"Running on {args.device}")
