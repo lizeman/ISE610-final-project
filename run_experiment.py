@@ -19,7 +19,7 @@ def main():
     curr_args = parser.parse_args()
     output_filename = f"result_{curr_args.start}_{curr_args.end}.csv"
 
-    df = pd.read_csv("ise_610-final_proj_design.csv")[curr_args.start : curr_args.end]
+    df = pd.read_csv("optimal.csv")[curr_args.start : curr_args.end]
     df = df.reset_index(drop=True)
     df.to_csv(os.path.join(output_dir, output_filename))
     for i in range(len(df)):
